@@ -37,7 +37,7 @@ namespace rocket
             resizeBuffer(new_size);
         }
         memcpy(&m_buffer[m_write_index], buf, size);
-        //m_write_index += size;
+        m_write_index += size;
     }
 
 

@@ -1,4 +1,5 @@
 #include <string.h>
+#include <fcntl.h>
 #include "rocket/net/fd_event.h"
 #include "rocket/common/log.h"
 
@@ -40,6 +41,27 @@ void FdEvent::listen(TriggerEvent event_type, std::function<void()> callback){
     }
     m_listen_events.data.ptr = this;
 
+}
+
+void FdEvent::cancle(TriggerEvent event_type) {
+    if(event_type == TriggerEvent::IN_EVENT){
+        m_listen_events.events &= (~EPOLLIN);
+    }
+    else{
+        m_listen_events.events &= (~EPOLLOUT);
+    }
+
+}
+
+void FdEvent::setNonBlock() {
+    //获取当前的flag
+    int flag = fcntl(m_fd, F_GETFL, 0);
+    //已经是非阻塞则直接返回
+    if(flag & O_NONBLOCK) {
+        return ;
+    }
+    //设置非阻塞：在原来的flag上新增 非阻塞 选项
+    fcntl(m_fd, F_SETFL, flag | O_NONBLOCK);
 }
     
 } // namespace rocket
